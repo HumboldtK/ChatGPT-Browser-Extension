@@ -1,25 +1,42 @@
+// Get the current timestamp in milliseconds
+var now = Date.now();
+var clearButton = document.getElementById("clear");
 var submitButton = document.getElementById("submit");
+var questionInput = document.getElementById("question");
+var answerTextarea = document.getElementById("answer");
+
+
+var port = chrome.runtime.connect({name: "popup"});
+
+port.postMessage({action: "getQuestion"});
+
+port.onMessage.addListener(function(msg) {
+  if (msg.action === "setQuestion" && msg.question) {
+    document.getElementById("question").value = msg.question;
+    
+    // Simulate a click event on submit button
+    document.getElementById("submit").click();
+    chrome.storage.local.remove("question");
+  }
+});
+
 
 if (submitButton) {
-  let questionInput = document.getElementById("question");
-  let answerTextarea = document.getElementById("answer");
-
   submitButton.addEventListener("click", function() {
     let question = questionInput.value.trim();
     if (question.length === 0) {
       return;
     }
-
     // Disable the submit button
     submitButton.disabled = true;
+    questionInput.value = '';
     answerTextarea.classList.add("loading");
-
 
     fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer API_KEY"
+          "Authorization": "ENTER_API_KEY_HERE"
         },
         body: JSON.stringify({
           "model": "gpt-3.5-turbo",
@@ -29,10 +46,11 @@ if (submitButton) {
               "content": question
             }
           ],
-          "temperature": 0.5,
-          "max_tokens": 100
+          "temperature": 0.3,
+          "max_tokens": 2000
         })
       })
+      
       .then(response => {
         answerTextarea.classList.remove("loading");
         if (response.ok) {
@@ -48,13 +66,21 @@ if (submitButton) {
 
           // Hide the loading animation and display the answer
           answerTextarea.value = answer;
+
+          // Save the question and answer in localStorage with a timestamp
+          let prompt = {
+            answer: answer,
+            timestamp: Date.now()
+          };
+          localStorage.setItem("prompt", JSON.stringify(prompt));
         } else {
           answerTextarea.value = "Sorry, I could not generate a response.";
         }
       })
       .catch(error => {
-        console.error(error);
+        console.error(`Error ${error.status}: ${error.message}`);
       })
+      
       .finally(() => {
         // Re-enable the submit button
         submitButton.disabled = false;
@@ -63,7 +89,183 @@ if (submitButton) {
 
   questionInput.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
-      submitButton.click();
+      if (!event.shiftKey) {
+        event.preventDefault();
+        submitButton.click();
+      }
+    }
+  });
+  
+  // Check if there is a saved prompt in localStorage
+  let prompt = localStorage.getItem("prompt");
+  if (prompt) {
+    prompt = JSON.parse(prompt);
+
+    // Check if the prompt is less than 1 hour old
+    if (Date.now() - prompt.timestamp < 3600000) {
+      // Display the question and answer in the input fields
+      answerTextarea.value = prompt.answer;
+    } else {
+      // Remove the prompt from localStorage if it is older than 1 hour
+      localStorage.removeItem("prompt");
+    }
+  }
+}
+
+// clear prompt memory / local storage
+if (clearButton) {
+  let questionInput = document.getElementById("question");
+  let answerTextarea = document.getElementById("answer");
+  clearButton.addEventListener("click", function() {
+    questionInput.value = "";
+    answerTextarea.value = "";
+    localStorage.removeItem("prompt");
+  });
+}
+
+
+// Get the modal
+var modal = document.getElementById("controlsmodal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("settingsBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+
+// Check if a preference for light/dark mode exists in localStorage
+var modePreference = localStorage.getItem('modePreference');
+// If there is a preference saved, use it to set the mode
+if (modePreference === 'dark') {
+  document.body.classList.add('dark-mode');
+  document.getElementById('lightdark').textContent = 'Light Mode';
+} else {
+  document.body.classList.remove('dark-mode');
+}
+// Add event listener for the light/dark mode button
+document.getElementById('lightdark').addEventListener('click', function() {
+  // Toggle the class on the body element
+  document.body.classList.toggle('dark-mode');
+  
+  // Change the button text
+  if (document.getElementById('lightdark').textContent === 'Dark Mode') {
+    document.getElementById('lightdark').textContent = 'Light Mode';
+    // Save the preference in localStorage
+    localStorage.setItem('modePreference', 'dark');
+  } else {
+    document.getElementById('lightdark').textContent = 'Dark Mode';
+    // Save the preference in localStorage
+    localStorage.setItem('modePreference', 'light');
+  }
+});
+
+
+// Update the CSS styles based on the light/dark mode
+function updateStyles() {
+  let wrapper = document.querySelector('.wrapper');
+  let question = document.getElementById('question');
+  let answer = document.getElementById('answer');
+  let logo = document.querySelector('.logo');
+  let modal = document.querySelector('.modal-content');
+  let settings = document.getElementById('settingsheader');
+  let closespan = document.querySelector('.close');
+
+  if (document.body.classList.contains('dark-mode')) {
+    wrapper.style.backgroundColor = '#292929';
+    modal.style.backgroundColor = '#585757';
+    question.style.backgroundColor = '#292929';
+    answer.style.backgroundColor = '#292929';
+    answer.style.borderColor = '#585757';
+    question.style.borderColor = '#585757';
+    logo.style.backgroundImage = "url('/styles/logo1.png')";
+    question.style.color = '#ffffff'
+    answer.style.color = '#ffffff';
+    settings.style.color = '#c8c8c8'
+    closespan.style.color = '#c8c8c8';
+  } else {
+    wrapper.style.backgroundColor = '#dddddd';
+    modal.style.backgroundColor = '#dddddd';
+    question.style.backgroundColor = '#f5f5f5';
+    answer.style.backgroundColor = '#f5f5f5';
+    answer.style.borderColor = '#bebbbb';
+    question.style.borderColor = '#bebbbb';
+    question.style.color = '#000000'
+    answer.style.color = '#000000';
+    settings.style.color = '#000000'
+    closespan.style.color = '#000000';
+    logo.style.backgroundImage = "url('/styles/logo.png')";
+  }
+}
+
+// Call the updateStyles function when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  updateStyles();
+  hideDonateButton();
+});
+
+
+// Call the updateStyles function when the light/dark mode is toggled
+document.body.addEventListener('click', function() {
+  updateStyles();
+});
+document.addEventListener('DOMContentLoaded', function () {
+  var links = document.getElementsByTagName("a");
+  for (var i = 0; i < links.length; i++) {
+      (function () {
+          var ln = links[i];
+          var location = ln.href;
+          ln.onclick = function () {
+              chrome.tabs.create({active: true, url: location});
+          };
+      })();
+  }
+});
+
+// hide donate buttonn 
+
+function hideDonateButton() {
+  let button = document.getElementById('hidedonate');
+  let donateButton = document.querySelector('.donatebutton');
+
+  // Retrieve the preference from local storage
+  let isDonateHidden = localStorage.getItem('isDonateHidden');
+
+  if (isDonateHidden === 'true') {
+    donateButton.style.display = 'none';
+    button.textContent = 'Show Donate';
+  }
+
+  button.addEventListener('click', function() {
+    if (donateButton.style.display === 'none') {
+      donateButton.style.display = 'block';
+      button.textContent = 'Hide Donate';
+
+      // Store the preference in local storage
+      localStorage.setItem('isDonateHidden', 'false');
+    } else {
+      donateButton.style.display = 'none';
+      button.textContent = 'Show Donate';
+
+      // Store the preference in local storage
+      localStorage.setItem('isDonateHidden', 'true');
     }
   });
 }

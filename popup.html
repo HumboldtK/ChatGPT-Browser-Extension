@@ -1,22 +1,54 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ChatGPT Extension</title>
+    <title>ChatBotGPT Extension</title>
     <script src="popup.js"></script>
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
   </head>
   <body>
+
+
     <div class="wrapper">
-      <h1>ChatBotGPT</h1>
-      <label for="question">Input:</label>
-      <input type="text" id="question">
-      <br>
-      <label for="answer">Answer:</label>
-      <textarea id="answer" readonly></textarea>
-      <br>
-      <button id="submit">Ask ChatGPT</button>
+      <div id="settings-icon">
+        <button id="settingsBtn" style="background: none; border: none;"><i class="fa-solid fa-gear"></i></button>
+      </div>      
+  <a class="logo"></a>
+  <br>
+  <textarea id="answer" placeholder="Awaiting question.." readonly></textarea>
+  <br>
+  <div id="questionWrapper">
+  <textarea id="question" placeholder="Ask Anything..."></textarea>
+  <div class="submitBtnDiv">
+  <button id="submit"><i class="fa-solid fa-reply"></i></button>
+  </div>
+</div>
+      <div class="footer">
+      </div>
     </div>
+
+
+        <!-- The Modal -->
+        <div id="controlsmodal" class="modal">
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+             <h2 id="settingsheader">Settings</h2>
+            </div>
+            <ul class="modal-body" style="list-style: none;">
+              <li><button id="lightdark">Dark Mode</button></li>
+              <li><button id="clear">Clear Memory</button></li>
+            </ul>
+            <div class="modal-footer">
+              
+
+            </div>
+          </div>
+        </div>
   
     <script src="popup.js"></script>
+
+   
   </body>
 </html>

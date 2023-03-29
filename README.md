@@ -1,8 +1,6 @@
 # ChatGPT-Chrome-Extension
 A basic chrome extension that can answer questions using ChatGPT's latest API.
 
-![](https://s10.gifyu.com/images/github.gif)
-
 
 # Before Using 
 Make sure to get an API key from https://platform.openai.com/account/api-keys

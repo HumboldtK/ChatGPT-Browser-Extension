@@ -1,13 +1,17 @@
 {
     "manifest_version": 3,
     "name": "ChatBotGPT",
-    "version": "1.0",
-    "description": "An extension that can answer questions using ChatGPT's gpt-3.5-turbo API.",
+    "version": "1.2.7",
+    "description": "Empowering users with AI.",
     "permissions": [
-      "activeTab"
+      "contextMenus",
+      "storage"
     ],
     "action": {
       "default_popup": "popup.html"
+    },
+    "background": {
+      "service_worker": "background.js"
     }
   }
   
