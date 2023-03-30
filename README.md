@@ -24,9 +24,3 @@ You'll then see "ChatBotGPT" in your extentions.
 
 Make sure to pin it for easy access. 
 
-# Notes
-This release added a memory function for storing current answer prompt in local storage for up to 1 hour by default
-
-Added a settings menu with light/dark mode and clear prompt function
-
-Redesigned layout
