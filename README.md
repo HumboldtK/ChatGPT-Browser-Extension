@@ -4,7 +4,7 @@ A basic chrome extension that can answer questions using ChatGPT's latest API.
 Try the live extension here: https://chrome.google.com/webstore/detail/ask-gpt/ihenjheffdoojicaemilfcdcjglimpme
 
 
-![Showcase](https://jacobmanus.com/images/askgpt.gif)
+![askgpt](https://user-images.githubusercontent.com/73680593/232276854-8b017cf2-ac9e-46fd-bbb4-c8e41afa39d2.gif)
 
 
 
