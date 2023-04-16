@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "ChatBotGPT",
-    "version": "1.2.7",
+    "name": "AskGPT",
+    "version": "1.2.9",
     "description": "Empowering users with AI.",
     "permissions": [
       "contextMenus",
@@ -14,4 +14,3 @@
       "service_worker": "background.js"
     }
   }
-  

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ChatBotGPT Extension</title>
-    <script src="popup.js"></script>
+    <title>AskGPT Extension</title>
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
   </head>
@@ -12,25 +11,25 @@
     <div class="wrapper">
       <div id="settings-icon">
         <button id="settingsBtn" style="background: none; border: none;"><i class="fa-solid fa-gear"></i></button>
-      </div>      
-  <a class="logo"></a>
-  <br>
-  <textarea id="answer" placeholder="Awaiting question.." readonly></textarea>
-  <br>
-  <div id="questionWrapper">
-  <textarea id="question" placeholder="Ask Anything..."></textarea>
-  <div class="submitBtnDiv">
-  <button id="submit"><i class="fa-solid fa-reply"></i></button>
-  </div>
-</div>
-      <div class="footer">
       </div>
+      <a class="logo"></a>
+      <a href="https://www.paypal.com/donate/?business=49LLQV95BUPDL&no_recurring=1&item_name=FOR+ASK+GPT&currency_code=USD" class="donatebutton"></a>
+      <br>
+      <textarea id="answer" placeholder="Awaiting question.." readonly></textarea>
+      <br>
+      <div id="questionWrapper">
+        <textarea id="question" placeholder="Ask Anything..."></textarea>
+        <div class="buttons-container">
+          <button id="viewHistoryBtn">Chat History</button>
+          <div class="submitBtnDiv">
+            <button id="submit"><i class="fa-solid fa-reply"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="footer"></div>
     </div>
-
-
-        <!-- The Modal -->
+    
         <div id="controlsmodal" class="modal">
-          <!-- Modal content -->
           <div class="modal-content">
             <div class="modal-header">
               <span class="close">&times;</span>
@@ -38,15 +37,28 @@
             </div>
             <ul class="modal-body" style="list-style: none;">
               <li><button id="lightdark">Dark Mode</button></li>
-              <li><button id="clear">Clear Memory</button></li>
+              <li><button id="clearChat">Clear Chat</button></li>
+              <li><button id="hidedonate">Hide Donate</button></li>
+              <li><button id="clearHistory">Clear History</button></li>
             </ul>
             <div class="modal-footer">
               
-
             </div>
           </div>
         </div>
   
+        <div id="historyModal" class="modal">
+          <div class="history-content">
+            <div class="historyheader">
+              <span class="history-title">Chat History</span>
+              <span class="closeHistory">&times;</span>
+            </div>
+            <div class="historybody">
+              <div class="history-list"></div>
+            </div>
+          </div>
+        </div>
+
     <script src="popup.js"></script>
 
    

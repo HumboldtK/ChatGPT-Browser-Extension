@@ -1,8 +1,10 @@
 # ChatGPT-Chrome-Extension
 A basic chrome extension that can answer questions using ChatGPT's latest API.
 
+Try the live extension here: https://chrome.google.com/webstore/detail/ask-gpt/ihenjheffdoojicaemilfcdcjglimpme
 
-https://user-images.githubusercontent.com/73680593/228456117-2baf205e-6ce2-4ee0-8fe4-8f8852d7721c.mov
+
+![Showcase](https://jacobmanus.com/images/askgpt.gif)
 
 
 

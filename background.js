@@ -40,12 +40,16 @@ chrome.runtime.onInstalled.addListener(function() {
     chrome.storage.local.set({question: prompt + selectedText}, function() {
       chrome.windows.create({
         url: chrome.runtime.getURL("popup.html"),
-        type: "popup",
-        width: 520,
-        height: 630
+        type: "popup"
+      }, function(newWindow) {
+        chrome.windows.update(newWindow.id, {
+          width: 590,
+          height: 645
+        });
       });
     });
   }
+  
 
   chrome.runtime.onConnect.addListener(function(port) {
     if (port.name === "popup") {

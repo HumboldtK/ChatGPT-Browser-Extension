@@ -1,9 +1,10 @@
 // Get the current timestamp in milliseconds
 var now = Date.now();
-var clearButton = document.getElementById("clear");
+var clearChatButton = document.getElementById("clearChat");
 var submitButton = document.getElementById("submit");
 var questionInput = document.getElementById("question");
 var answerTextarea = document.getElementById("answer");
+var clearHistoryButton = document.getElementById("clearHistory");
 
 
 var port = chrome.runtime.connect({name: "popup"});
@@ -36,7 +37,7 @@ if (submitButton) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "ENTER_API_KEY_HERE"
+          "Authorization": "Bearer ENTER_API_KEY_HERE"
         },
         body: JSON.stringify({
           "model": "gpt-3.5-turbo",
@@ -110,45 +111,60 @@ if (submitButton) {
       localStorage.removeItem("prompt");
     }
   }
-}
 
-// clear prompt memory / local storage
-if (clearButton) {
+  // Retrieve the last answer from localStorage and display it
+  let lastAnswer = localStorage.getItem("lastAnswer");
+  if (lastAnswer) {
+  answerTextarea.value = lastAnswer;
+  }
+  }
+  
+  // clear prompt memory / local storage
+  if (clearChatButton) {
   let questionInput = document.getElementById("question");
   let answerTextarea = document.getElementById("answer");
-  clearButton.addEventListener("click", function() {
-    questionInput.value = "";
-    answerTextarea.value = "";
-    localStorage.removeItem("prompt");
+  clearChatButton.addEventListener("click", function() {
+  questionInput.value = "";
+  answerTextarea.value = "";
+  localStorage.removeItem("prompt");
+  localStorage.removeItem("lastAnswer"); // Remove the last answer from localStorage
   });
+  }
+
+
+function appendToHistory(question, answer, timestamp) {
+  const historyList = document.querySelector(".history-list");
+  let historyItemDiv = document.createElement("div");
+  historyItemDiv.className = "history-item";
+  
+  let historyQuestion = document.createElement("div");
+  historyQuestion.className = "history-question";
+  historyQuestion.innerHTML = `Q: ${question}`;
+  historyItemDiv.appendChild(historyQuestion);
+
+  let historyAnswer = document.createElement("div");
+  historyAnswer.className = "history-answer";
+  historyAnswer.innerHTML = `A: ${answer}`;
+  historyItemDiv.appendChild(historyAnswer);
+
+  historyList.insertBefore(historyItemDiv, historyList.firstChild);
 }
 
 
-// Get the modal
-var modal = document.getElementById("controlsmodal");
 
-// Get the button that opens the modal
-var btn = document.getElementById("settingsBtn");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks the button, open the modal 
-btn.onclick = function() {
-  modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
+function clearHistory() {
+  let confirmClear = confirm("Are you sure you want to clear the chat history?");
+  if (confirmClear) {
+    localStorage.removeItem("history"); // Remove chat history from local storage
+    document.querySelector(".history-list").innerHTML = ""; // Clear chat history display
   }
 }
+
+if (clearHistoryButton) {
+  clearHistoryButton.addEventListener("click", clearHistory);
+}
+
+
 
 
 // Check if a preference for light/dark mode exists in localStorage
@@ -178,49 +194,6 @@ document.getElementById('lightdark').addEventListener('click', function() {
 });
 
 
-// Update the CSS styles based on the light/dark mode
-function updateStyles() {
-  let wrapper = document.querySelector('.wrapper');
-  let question = document.getElementById('question');
-  let answer = document.getElementById('answer');
-  let logo = document.querySelector('.logo');
-  let modal = document.querySelector('.modal-content');
-  let settings = document.getElementById('settingsheader');
-  let closespan = document.querySelector('.close');
-
-  if (document.body.classList.contains('dark-mode')) {
-    wrapper.style.backgroundColor = '#292929';
-    modal.style.backgroundColor = '#585757';
-    question.style.backgroundColor = '#292929';
-    answer.style.backgroundColor = '#292929';
-    answer.style.borderColor = '#585757';
-    question.style.borderColor = '#585757';
-    logo.style.backgroundImage = "url('/styles/logo1.png')";
-    question.style.color = '#ffffff'
-    answer.style.color = '#ffffff';
-    settings.style.color = '#c8c8c8'
-    closespan.style.color = '#c8c8c8';
-  } else {
-    wrapper.style.backgroundColor = '#dddddd';
-    modal.style.backgroundColor = '#dddddd';
-    question.style.backgroundColor = '#f5f5f5';
-    answer.style.backgroundColor = '#f5f5f5';
-    answer.style.borderColor = '#bebbbb';
-    question.style.borderColor = '#bebbbb';
-    question.style.color = '#000000'
-    answer.style.color = '#000000';
-    settings.style.color = '#000000'
-    closespan.style.color = '#000000';
-    logo.style.backgroundImage = "url('/styles/logo.png')";
-  }
-}
-
-// Call the updateStyles function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-  updateStyles();
-  hideDonateButton();
-});
-
 
 // Call the updateStyles function when the light/dark mode is toggled
 document.body.addEventListener('click', function() {
@@ -239,8 +212,120 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-// hide donate buttonn 
 
+function loadHistory() {
+  let history = JSON.parse(localStorage.getItem("history")) || [];
+  let currentTime = Date.now();
+  let historyFiltered = [];
+
+  history.forEach(item => {
+    if (currentTime - item.timestamp <= 30 * 24 * 60 * 60 * 1000) { // Check if the item is not older than 30 days
+      appendToHistory(item.question, item.answer, item.timestamp);
+      historyFiltered.push(item);
+    }
+  });
+
+  localStorage.setItem("history", JSON.stringify(historyFiltered)); // Update the localStorage with filtered history
+}
+loadHistory();
+
+
+// Get the history modal and close button
+var historyModal = document.getElementById("historyModal");
+var closeHistory = document.getElementsByClassName("closeHistory")[0];
+
+// When the user clicks the "View History" button, open the history modal
+document.getElementById("viewHistoryBtn").onclick = function() {
+  historyModal.style.display = "block";
+};
+
+// When the user clicks the close button (x), close the history modal
+closeHistory.onclick = function() {
+  historyModal.style.display = "none";
+};
+
+// When the user clicks anywhere outside of the modal, close it
+document.addEventListener('click', function(event) {
+  if (event.target == historyModal) {
+    historyModal.style.display = "none";
+  }
+});
+
+var modal = document.getElementById("controlsmodal");
+
+var btn = document.getElementById("settingsBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+// Update the CSS styles based on the light/dark mode
+function updateStyles() {
+  let wrapper = document.querySelector('.wrapper');
+  let question = document.getElementById('question');
+  let answer = document.getElementById('answer');
+  let logo = document.querySelector('.logo');
+  let modal = document.querySelector('.modal-content');
+  let settings = document.getElementById('settingsheader');
+  let closesettings = document.querySelector('.close');
+
+  if (document.body.classList.contains('dark-mode')) {
+    wrapper.style.backgroundColor = '#292929';
+    modal.style.backgroundColor = '#585757';
+    question.style.backgroundColor = '#292929';
+    answer.style.backgroundColor = '#292929';
+    answer.style.borderColor = '#585757';
+    question.style.borderColor = '#585757';
+    logo.style.backgroundImage = "url('/styles/logo1.svg')";
+    question.style.color = '#ffffff';
+    answer.style.color = '#ffffff';
+    settings.style.color = '#c8c8c8';
+    closesettings.style.color = '#ffffff';
+    // Change text color of all history items to white
+    let historyItems = document.querySelectorAll('.history-item');
+    for (let i = 0; i < historyItems.length; i++) {
+      historyItems[i].style.color = '#ffffff';
+    }
+  } else {
+    wrapper.style.backgroundColor = '#dddddd';
+    modal.style.backgroundColor = '#dddddd';
+    question.style.backgroundColor = '#f5f5f5';
+    answer.style.backgroundColor = '#f5f5f5';
+    answer.style.borderColor = '#bebbbb';
+    question.style.borderColor = '#bebbbb';
+    question.style.color = '#000000';
+    answer.style.color = '#000000';
+    settings.style.color = '#000000';
+    closesettings.style.color = '#000000';
+
+    // Change text color of all history items to default color
+    let historyItems = document.querySelectorAll('.history-item');
+    for (let i = 0; i < historyItems.length; i++) {
+      historyItems[i].style.color = '';
+    }
+    
+    logo.style.backgroundImage = "url('/styles/logo.svg')";
+  }
+}
+
+
+// hide donate buttonn 
 function hideDonateButton() {
   let button = document.getElementById('hidedonate');
   let donateButton = document.querySelector('.donatebutton');
@@ -269,3 +354,9 @@ function hideDonateButton() {
     }
   });
 }
+
+// Call the updateStyles function when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  updateStyles();
+  hideDonateButton();
+});
