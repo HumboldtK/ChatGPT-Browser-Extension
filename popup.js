@@ -32,6 +32,7 @@ if (submitButton) {
     submitButton.disabled = true;
     questionInput.value = '';
     answerTextarea.classList.add("loading");
+	localStorage.removeItem("partialQuestion");
 
     fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -126,6 +127,7 @@ if (submitButton) {
   clearChatButton.addEventListener("click", function() {
   questionInput.value = "";
   answerTextarea.value = "";
+  localStorage.removeItem("partialQuestion"); 
   localStorage.removeItem("prompt");
   localStorage.removeItem("lastAnswer"); // Remove the last answer from localStorage
   });
@@ -354,6 +356,19 @@ function hideDonateButton() {
     }
   });
 }
+
+
+
+questionInput.addEventListener("input", function() {
+  localStorage.setItem("partialQuestion", questionInput.value);
+});
+
+
+const partialQuestion = localStorage.getItem("partialQuestion");
+if (partialQuestion) {
+  questionInput.value = partialQuestion;
+}
+
 
 // Call the updateStyles function when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
