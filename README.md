@@ -13,7 +13,7 @@ Make sure to get an API key from https://platform.openai.com/account/api-keys
 
 Replace ENTER_API_KEY_HERE" with your API key in popup.js
 
-# Add the extension
+# Test Locally
 Download the latest release or clone the git repository by using "git clone https://github.com/HumboldtK/ChatGPT-Chrome-Extension.git"
 
 Go to chrome://extensions in your Google Chrome browser
