@@ -22,7 +22,7 @@ Go to chrome://extensions in your Google Chrome browser or edge://extensions/ fo
 
 Check the Developer mode checkbox in the top right-hand corner
 
-Click "Load Unpacked" and select your ChatGPT-Chrome-Extension directory.
+Click "Load Unpacked" and select the ChatGPT-Chrome-Extension directory.
 
 You'll then see "ChatBotGPT" in your extentions.
 
