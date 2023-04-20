@@ -18,7 +18,7 @@ Download the latest release or clone the git repository by using "git clone http
 
 Replace ENTER_API_KEY_HERE" with your API key in popup.js
 
-Go to chrome://extensions in your Google Chrome browser
+Go to chrome://extensions in your Google Chrome browser or edge://extensions/ for Edge browser
 
 Check the Developer mode checkbox in the top right-hand corner
 
