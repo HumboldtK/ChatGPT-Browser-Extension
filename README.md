@@ -16,6 +16,8 @@ Replace ENTER_API_KEY_HERE" with your API key in popup.js
 # Test Locally
 Download the latest release or clone the git repository by using "git clone https://github.com/HumboldtK/ChatGPT-Chrome-Extension.git"
 
+Replace ENTER_API_KEY_HERE" with your API key in popup.js
+
 Go to chrome://extensions in your Google Chrome browser
 
 Check the Developer mode checkbox in the top right-hand corner
